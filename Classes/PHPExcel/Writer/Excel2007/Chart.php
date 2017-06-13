@@ -374,8 +374,10 @@ class PHPExcel_Writer_Excel2007_Chart extends
         ($chartType !== PHPExcel_Chart_DataSeries::TYPE_DONUTCHART)
     ) {
 
-      if ($chartType === PHPExcel_Chart_DataSeries::TYPE_BUBBLECHART) {
-        $this->_writeValAx($objWriter, $plotArea, $xAxisLabel, $chartType, $id1, $id2, $catIsMultiLevelSeries, $xAxis, $yAxis, $majorGridlines, $minorGridlines);
+      if (($chartType === PHPExcel_Chart_DataSeries::TYPE_BUBBLECHART) || 
+          ($chartType === PHPExcel_Chart_DataSeries::TYPE_SCATTERCHART)
+      ) {
+        $this->_writeValAx($objWriter, $plotArea, $xAxisLabel, $chartType, $id2, $id1, $catIsMultiLevelSeries, $xAxis, $yAxis, $majorGridlines, $minorGridlines);
       } else {
         $this->_writeCatAx($objWriter, $plotArea, $xAxisLabel, $chartType, $id1, $id2, $catIsMultiLevelSeries, $xAxis, $yAxis);
       }
@@ -1145,6 +1147,17 @@ class PHPExcel_Writer_Excel2007_Chart extends
     foreach ($plotSeriesOrder as $plotSeriesIdx => $plotSeriesRef) {
       $objWriter->startElement('c:ser');
 
+      if (($groupType == PHPExcel_Chart_DataSeries::TYPE_SCATTERCHART) ||
+          ($groupType == PHPExcel_Chart_DataSeries::TYPE_BUBBLECHART)
+      ){
+        //    Line Fill
+        $objWriter->startElement('c:spPr');
+        $objWriter->startElement('a:ln');
+        $objWriter->writeElement('a:noFill');
+        $objWriter->endElement();
+        $objWriter->endElement();
+      }
+      
       $objWriter->startElement('c:idx');
       $objWriter->writeAttribute('val', $this->_seriesIndex + $plotSeriesIdx);
       $objWriter->endElement();
